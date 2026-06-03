@@ -59,7 +59,13 @@ public enum MinecraftVersion {
      * This constant represents Minecraft (Java Edition) Version 1.21
      * ("Tricky Trials")
      */
-    MINECRAFT_1_21(21, 0, "1.21.x"),
+    MINECRAFT_1_21(21, 0, 3, "1.21.x"),
+
+    /**
+     * This constant represents Minecraft (Java Edition) Version 1.21.4
+     * ("The Garden Awakens")
+     */
+    MINECRAFT_1_21_4(21, 4, "1.21.4+"),
 
     /**
      * This constant represents an exceptional state in which we were unable

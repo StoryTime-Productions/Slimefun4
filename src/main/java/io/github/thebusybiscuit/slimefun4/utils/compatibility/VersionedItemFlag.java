@@ -17,9 +17,18 @@ public class VersionedItemFlag {
     static {
         MinecraftVersion version = Slimefun.getMinecraftVersion();
 
-        HIDE_ADDITIONAL_TOOLTIP = version.isAtLeast(MinecraftVersion.MINECRAFT_1_20_5)
-            ? ItemFlag.HIDE_ADDITIONAL_TOOLTIP
-            : getKey("HIDE_POTION_EFFECTS");
+        if (version.isAtLeast(MinecraftVersion.MINECRAFT_1_20_5)) {
+            HIDE_ADDITIONAL_TOOLTIP = ItemFlag.HIDE_ADDITIONAL_TOOLTIP;
+        } else {
+            // For unknown/future versions (e.g. Paper 26 reports MC 26.1.2 which Slimefun
+            // doesn't recognize), HIDE_POTION_EFFECTS may no longer exist. Try the new name
+            // first, then fall back to the old name for genuinely older servers.
+            ItemFlag flag = getKey("HIDE_ADDITIONAL_TOOLTIP");
+            if (flag == null) {
+                flag = getKey("HIDE_POTION_EFFECTS");
+            }
+            HIDE_ADDITIONAL_TOOLTIP = flag;
+        }
     }
 
     @Nullable

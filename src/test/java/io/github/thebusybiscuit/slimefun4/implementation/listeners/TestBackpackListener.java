@@ -1,8 +1,8 @@
 package io.github.thebusybiscuit.slimefun4.implementation.listeners;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.ServerMock;
-import be.seeseemelk.mockbukkit.entity.ItemEntityMock;
+import org.mockbukkit.mockbukkit.MockBukkit;
+import org.mockbukkit.mockbukkit.ServerMock;
+import org.mockbukkit.mockbukkit.entity.ItemEntityMock;
 import io.github.bakedlibs.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.slimefun4.api.exceptions.TagMisconfigurationException;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.Inventory;
@@ -82,13 +83,15 @@ class TestBackpackListener {
         PlayerProfile profile = TestUtilities.awaitProfile(player);
 
         PlayerBackpack backpack = profile.createBackpack(size);
-        listener.setBackpackId(player, item.item(), 2, backpack.getId());
+        // item.item() returns a clone each call — capture once so setBackpackId and openBackpack share the same object
+        ItemStack backpackItemStack = item.item();
+        listener.setBackpackId(player, backpackItemStack, 2, backpack.getId());
 
         ItemGroup itemGroup = new ItemGroup(new NamespacedKey(plugin, "test_backpacks"), CustomItemStack.create(Material.CHEST, "&4Test Backpacks"));
         SlimefunBackpack slimefunBackpack = new SlimefunBackpack(size, itemGroup, item, RecipeType.NULL, new ItemStack[9]);
         slimefunBackpack.register(plugin);
 
-        listener.openBackpack(player, item.item(), slimefunBackpack);
+        listener.openBackpack(player, backpackItemStack, slimefunBackpack);
         return backpack;
     }
 
@@ -140,7 +143,11 @@ class TestBackpackListener {
 
         int slot = 7;
         inv.setItem(slot, item);
-        InventoryClickEvent event = new InventoryClickEvent(player.getOpenInventory(), SlotType.CONTAINER, slot, ClickType.LEFT, InventoryAction.PICKUP_ONE);
+        // Use InventoryViewWrapper so getItem(slot) properly delegates to the backpack inventory,
+        // avoiding MockBukkit's openInventory which would fire InventoryCloseEvent and remove the
+        // player from the backpacks map.
+        InventoryViewWrapper view = new InventoryViewWrapper(player, inv, player.getInventory(), InventoryType.CHEST);
+        InventoryClickEvent event = new InventoryClickEvent(view, SlotType.CONTAINER, slot, ClickType.LEFT, InventoryAction.PICKUP_ONE);
         listener.onClick(event);
         return !event.isCancelled();
     }
@@ -164,11 +171,12 @@ class TestBackpackListener {
     @EnumSource(value = Material.class, names = { "AIR", "SHULKER_BOX" })
     void testHotbarKey(Material type) throws InterruptedException {
         Player player = server.addPlayer();
-        openMockBackpack(player, "BACKPACK_HOTBAR_" + type.name(), 9);
+        Inventory backpackInv = openMockBackpack(player, "BACKPACK_HOTBAR_" + type.name(), 9).getInventory();
 
         int slot = 7;
         player.getInventory().setItem(slot, new ItemStack(type));
-        InventoryClickEvent event = new InventoryClickEvent(player.getOpenInventory(), SlotType.CONTAINER, slot, ClickType.NUMBER_KEY, InventoryAction.PICKUP_ONE, slot);
+        InventoryViewWrapper view = new InventoryViewWrapper(player, backpackInv, player.getInventory(), InventoryType.CHEST);
+        InventoryClickEvent event = new InventoryClickEvent(view, SlotType.CONTAINER, slot, ClickType.NUMBER_KEY, InventoryAction.PICKUP_ONE, slot);
         listener.onClick(event);
 
         Assertions.assertEquals(type != Material.AIR, event.isCancelled());

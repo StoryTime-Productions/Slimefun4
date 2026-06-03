@@ -939,7 +939,7 @@ public final class SlimefunItemSetup {
                 .register(plugin);
 
         registerArmorSet(itemGroups.armor, SlimefunItems.CHAIN, new ItemStack[] {
-                new ItemStack(Material.CHAINMAIL_HELMET), new ItemStack(Material.CHAINMAIL_CHESTPLATE), new ItemStack(Material.CHAINMAIL_LEGGINGS), new ItemStack(Material.CHAINMAIL_BOOTS)
+                CustomItemStack.create(Material.CHAINMAIL_HELMET, "&fChainmail Helmet"), CustomItemStack.create(Material.CHAINMAIL_CHESTPLATE, "&fChainmail Chestplate"), CustomItemStack.create(Material.CHAINMAIL_LEGGINGS, "&fChainmail Leggings"), CustomItemStack.create(Material.CHAINMAIL_BOOTS, "&fChainmail Boots")
         }, "CHAIN", true, new PotionEffect[0][0], plugin);
 
         new Talisman(SlimefunItems.TALISMAN_WHIRLWIND,

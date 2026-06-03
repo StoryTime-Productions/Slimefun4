@@ -21,16 +21,14 @@
         <!-- UTF-8 is our standard encoding for source files -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <!-- Target Java 16 -->
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
-        <!-- Run tests using java 21 -->
+        <!-- Target Java 21 -->
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.testSource>21</maven.compiler.testSource>
         <maven.compiler.testTarget>21</maven.compiler.testTarget>
 
-        <!-- Spigot properties -->
-        <paper.version>1.21.1</paper.version>
-        <paper.javadocs>https://hub.spigotmc.org/javadocs/spigot/</paper.javadocs>
+        <!-- Paper properties -->
+        <paper.javadocs>https://jd.papermc.io/paper/26.1.2/</paper.javadocs>
 
         <!-- Default settings for sonarcloud.io -->
         <sonar.projectKey>Slimefun_Slimefun4</sonar.projectKey>
@@ -154,6 +152,7 @@
                 <configuration>
                     <junitArtifactName>org.junit.jupiter:junit-jupiter</junitArtifactName>
                     <trimStackTrace>false</trimStackTrace>
+                    <argLine>@{argLine} -Dnet.bytebuddy.experimental=true --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
 
@@ -168,7 +167,7 @@
                 <!-- Code Coverage Reports -->
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.12</version>
+                <version>0.8.14</version>
 
                 <executions>
                     <execution>
@@ -219,6 +218,19 @@
                             <artifact>*:*</artifact>
                             <excludes>
                                 <exclude>META-INF/*</exclude>
+                            </excludes>
+                        </filter>
+                        <!-- Exclude dough classes that are patched in Slimefun's own source.
+                             GameProfile became final in Paper 26+, and authlib 7.0.63 renamed
+                             getProperties()->properties() and getId()->id(). MinecraftVersion is
+                             patched to handle Paper 26's "26.1.2.build.63-stable" version string. -->
+                        <filter>
+                            <artifact>com.github.Slimefun.dough:dough-api</artifact>
+                            <excludes>
+                                <exclude>io/github/bakedlibs/dough/skins/CustomGameProfile.class</exclude>
+                                <exclude>io/github/bakedlibs/dough/skins/PlayerHead.class</exclude>
+                                <exclude>io/github/bakedlibs/dough/skins/nms/PlayerHeadAdapter.class</exclude>
+                                <exclude>io/github/bakedlibs/dough/versions/MinecraftVersion.class</exclude>
                             </excludes>
                         </filter>
                     </filters>
@@ -362,12 +374,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.Slimefun.dough</groupId>
-            <artifactId>dough-api</artifactId>
-            <version>cb22e71335</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>io.papermc</groupId>
             <artifactId>paperlib</artifactId>
             <version>1.0.8</version>
@@ -378,7 +384,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>${paper.version}-R0.1-SNAPSHOT</version>
+            <version>26.1.2.build.65-stable</version>
             <scope>provided</scope>
         </dependency>
 
@@ -402,9 +408,9 @@
         </dependency>
         <!-- This needs to be before Spigot because MockBukkit will fail otherwise. -->
         <dependency>
-            <groupId>com.github.seeseemelk</groupId>
-            <artifactId>MockBukkit-v1.21</artifactId>
-            <version>3.133.2</version>
+            <groupId>org.mockbukkit.mockbukkit</groupId>
+            <artifactId>mockbukkit-v26.1.2</artifactId>
+            <version>dev-6d384d3</version>
             <scope>test</scope>
 
             <exclusions>

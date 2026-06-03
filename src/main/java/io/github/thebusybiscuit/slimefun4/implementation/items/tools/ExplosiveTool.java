@@ -54,7 +54,11 @@ public class ExplosiveTool extends SimpleSlimefunItem<ToolUseHandler> implements
 
     private static Constructor<?> pre21ExplodeEventConstructor;
     static {
-        if (Slimefun.getMinecraftVersion().isBefore(MinecraftVersion.MINECRAFT_1_21)) {
+        MinecraftVersion version = Slimefun.getMinecraftVersion();
+        // UNKNOWN version means Slimefun couldn't detect MC version (e.g. Paper 26 with new
+        // versioning scheme). Treat it like 1.21+ — only look up the old constructor on
+        // known older versions to avoid a noisy SEVERE log on unsupported-but-working servers.
+        if (version != MinecraftVersion.UNKNOWN && version.isBefore(MinecraftVersion.MINECRAFT_1_21)) {
             try {
                 pre21ExplodeEventConstructor = BlockExplodeEvent.class.getConstructor(Block.class, List.class, float.class);
             } catch (Exception e) {
@@ -207,18 +211,16 @@ public class ExplosiveTool extends SimpleSlimefunItem<ToolUseHandler> implements
         float yield
     ) {
         var version = Slimefun.getMinecraftVersion();
-        if (version.isAtLeast(MinecraftVersion.MINECRAFT_1_21)) {
+        if (version.isAtLeast(MinecraftVersion.MINECRAFT_1_21) || pre21ExplodeEventConstructor == null) {
+            // Use new constructor for MC 1.21+ and for unknown/future versions (Paper 26+)
             return new BlockExplodeEvent(block, block.getState(), blocks, yield, ExplosionResult.DESTROY);
-        } else if (pre21ExplodeEventConstructor != null) {
+        } else {
             try {
                 return (BlockExplodeEvent) pre21ExplodeEventConstructor.newInstance(block, blocks, yield);
             } catch (Exception e) {
                 Slimefun.logger().log(Level.SEVERE, "Could not find constructor for BlockExplodeEvent", e);
+                return null;
             }
-
-            return null;
-        } else {
-            throw new IllegalStateException("BlockExplodeEvent constructor not found");
         }
     }
 }

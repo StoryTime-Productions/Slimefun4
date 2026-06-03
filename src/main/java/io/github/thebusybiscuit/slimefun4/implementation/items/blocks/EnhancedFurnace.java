@@ -86,14 +86,10 @@ public class EnhancedFurnace extends SimpleSlimefunItem<BlockTicker> {
                     BlockStateSnapshotResult result = PaperLib.getBlockState(b, false);
                     BlockState state = result.getState();
 
-                    // Check if the BlockState is a Furnace and cooking something
-                    if (state instanceof Furnace furnace && furnace.getCookTime() > 0) {
+                    // Check if the furnace is burning (has fuel) and has something to cook
+                    if (state instanceof Furnace furnace && furnace.getBurnTime() > 0 && furnace.getCookTimeTotal() > 0) {
                         setProgress(furnace);
-
-                        // Only update if necessary
-                        if (result.isSnapshot()) {
-                            state.update(true, false);
-                        }
+                        state.update(true, false);
                     }
                 }
             }
