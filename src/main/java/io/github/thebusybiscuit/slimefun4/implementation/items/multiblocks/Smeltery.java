@@ -18,10 +18,12 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import io.github.bakedlibs.dough.items.CustomItemStack;
+import io.github.thebusybiscuit.slimefun4.api.MinecraftVersion;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemSetting;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.items.settings.IntRangeSetting;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.github.thebusybiscuit.slimefun4.implementation.items.blocks.IgnitionChamber;
 import io.github.thebusybiscuit.slimefun4.implementation.items.misc.AlloyIngot;
@@ -59,6 +61,14 @@ public class Smeltery extends AbstractSmeltery {
     protected void registerDefaultRecipes(@Nonnull List<ItemStack> recipes) {
         recipes.add(SlimefunItems.IRON_DUST.item());
         recipes.add(new ItemStack(Material.IRON_INGOT));
+
+        recipes.add(new ItemStack(Material.GOLD_ORE));
+        recipes.add(new ItemStack(Material.GOLD_INGOT));
+
+        if (Slimefun.getMinecraftVersion().isAtLeast(MinecraftVersion.MINECRAFT_1_17)) {
+            recipes.add(new ItemStack(Material.DEEPSLATE_GOLD_ORE));
+            recipes.add(new ItemStack(Material.GOLD_INGOT));
+        }
     }
 
     @Override

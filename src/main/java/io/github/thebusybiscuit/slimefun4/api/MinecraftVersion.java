@@ -68,6 +68,11 @@ public enum MinecraftVersion {
     MINECRAFT_1_21_4(21, 4, "1.21.4+"),
 
     /**
+     * This constant represents Minecraft (Java Edition) Version 26.x
+     */
+    MINECRAFT_26(26, "26.x"),
+
+    /**
      * This constant represents an exceptional state in which we were unable
      * to identify the Minecraft Version we are using
      */

@@ -528,6 +528,20 @@ public class Slimefun extends JavaPlugin implements SlimefunAddon {
             int version = PaperLib.getMinecraftVersion();
             int patchVersion = PaperLib.getMinecraftPatchVersion();
 
+            // PaperLib's regex only matches single-digit major versions (e.g. "1.21.4").
+            // Paper 26+ uses a new format (e.g. "26.1.2") that PaperLib can't parse.
+            // Fall back to dough's version parser which was already patched for this.
+            if (version <= 0) {
+                try {
+                    io.github.bakedlibs.dough.versions.MinecraftVersion doughVer =
+                        io.github.bakedlibs.dough.versions.MinecraftVersion.get();
+                    version = doughVer.getMajorVersion();
+                    patchVersion = doughVer.getMinorVersion();
+                } catch (Exception ignored) {
+                    // Dough couldn't parse it either; fall through to the unknown-version path
+                }
+            }
+
             if (version > 0) {
                 // Check all supported versions of Minecraft
                 for (MinecraftVersion supportedVersion : MinecraftVersion.values()) {
