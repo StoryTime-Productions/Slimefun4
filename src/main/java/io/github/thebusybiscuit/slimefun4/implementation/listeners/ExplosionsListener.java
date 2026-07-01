@@ -45,6 +45,9 @@ public class ExplosionsListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent e) {
+        if (e.getEntity().getType() == EntityType.WIND_CHARGE) {
+            return;
+        }
         removeResistantBlocks(e.blockList().iterator());
     }
 

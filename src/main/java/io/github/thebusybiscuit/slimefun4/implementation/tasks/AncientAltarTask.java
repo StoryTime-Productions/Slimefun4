@@ -100,6 +100,9 @@ public class AncientAltarTask implements Runnable {
 
         if (this.stage > 0 && this.stage % 4 == 0) {
             checkPedestal(pedestals.get(this.stage / 4 - 1));
+            if (!running) {
+                return;
+            }
         }
 
         this.stage += 1;
@@ -107,8 +110,8 @@ public class AncientAltarTask implements Runnable {
     }
 
     private boolean checkLockedItems() {
-        for (Map.Entry<Item, Location> entry : positionLock.entrySet()) {
-            if (entry.getKey().getLocation().distanceSquared(entry.getValue()) > 0.1) {
+        for (Item entity : positionLock.keySet()) {
+            if (!entity.isValid()) {
                 return false;
             }
         }

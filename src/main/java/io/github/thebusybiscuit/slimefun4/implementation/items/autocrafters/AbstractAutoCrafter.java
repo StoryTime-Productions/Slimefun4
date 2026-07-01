@@ -255,10 +255,8 @@ public abstract class AbstractAutoCrafter extends SlimefunItem implements Energy
                 PersistentDataAPI.setString(skull, recipeStorageKey, recipe.toString());
             }
 
-            // Fixes #2899 - Update the BlockState if necessary
-            if (result.isSnapshot()) {
-                state.update(true, false);
-            }
+            // Always update the BlockState to persist PDC changes (Paper 26 requires this even for live states)
+            state.update(true, false);
         }
     }
 
@@ -435,8 +433,13 @@ public abstract class AbstractAutoCrafter extends SlimefunItem implements Energy
                         leftoverItems.add(leftover);
                     }
 
-                    // Update the item amount
-                    item.setAmount(entry.getValue());
+                    // Update the item amount - must call setItem() since getItem() returns a copy
+                    if (entry.getValue() == 0) {
+                        inv.setItem(entry.getKey(), null);
+                    } else {
+                        item.setAmount(entry.getValue());
+                        inv.setItem(entry.getKey(), item);
+                    }
                 }
             }
 

@@ -24,46 +24,32 @@ public class VersionedParticle {
 
     static {
         MinecraftVersion version = Slimefun.getMinecraftVersion();
+        // Treat UNKNOWN as modern — old particle names won't exist in newer MC versions
+        boolean useModernNames = version == MinecraftVersion.UNKNOWN || version.isAtLeast(MinecraftVersion.MINECRAFT_1_20_5);
 
         // REDSTONE is renamed to DUST in 1.20.5
-        DUST = version.isAtLeast(MinecraftVersion.MINECRAFT_1_20_5)
-            ? Particle.DUST
-            : getKey("REDSTONE");
+        DUST = useModernNames ? Particle.DUST : getKey("REDSTONE");
 
         // SMOKE_NORMAL is renamed to SMOKE in 1.20.5
-        SMOKE = version.isAtLeast(MinecraftVersion.MINECRAFT_1_20_5)
-            ? Particle.SMOKE
-            : getKey("SMOKE_NORMAL");
-    
+        SMOKE = useModernNames ? Particle.SMOKE : getKey("SMOKE_NORMAL");
+
         // VILLAGER_HAPPY is renamed to HAPPY_VILLAGER in 1.20.5
-        HAPPY_VILLAGER = version.isAtLeast(MinecraftVersion.MINECRAFT_1_20_5)
-            ? Particle.HAPPY_VILLAGER
-            : getKey("VILLAGER_HAPPY");
+        HAPPY_VILLAGER = useModernNames ? Particle.HAPPY_VILLAGER : getKey("VILLAGER_HAPPY");
 
         // CRIT_MAGIC is renamed to ENCHANTED_HIT in 1.20.5
-        ENCHANTED_HIT = version.isAtLeast(MinecraftVersion.MINECRAFT_1_20_5)
-            ? Particle.ENCHANTED_HIT
-            : getKey("CRIT_MAGIC");
-        
+        ENCHANTED_HIT = useModernNames ? Particle.ENCHANTED_HIT : getKey("CRIT_MAGIC");
+
         // EXPLOSION_LARGE is renamed to EXPLOSION in 1.20.5
-        EXPLOSION = version.isAtLeast(MinecraftVersion.MINECRAFT_1_20_5)
-            ? Particle.EXPLOSION
-            : getKey("EXPLOSION_LARGE");
-        
+        EXPLOSION = useModernNames ? Particle.EXPLOSION : getKey("EXPLOSION_LARGE");
+
         // SPELL_WITCH is renamed to WITCH in 1.20.5
-        WITCH = version.isAtLeast(MinecraftVersion.MINECRAFT_1_20_5)
-            ? Particle.WITCH
-            : getKey("SPELL_WITCH");
-        
+        WITCH = useModernNames ? Particle.WITCH : getKey("SPELL_WITCH");
+
         // FIREWORKS_SPARK is renamed to FIREWORK in 1.20.5
-        FIREWORK = version.isAtLeast(MinecraftVersion.MINECRAFT_1_20_5)
-            ? Particle.FIREWORK
-            : getKey("FIREWORKS_SPARK");
-        
+        FIREWORK = useModernNames ? Particle.FIREWORK : getKey("FIREWORKS_SPARK");
+
         // ENCHANTMENT_TABLE is renamed to ENCHANT in 1.20.5
-        ENCHANT = version.isAtLeast(MinecraftVersion.MINECRAFT_1_20_5)
-            ? Particle.ENCHANT
-            : getKey("ENCHANTMENT_TABLE");
+        ENCHANT = useModernNames ? Particle.ENCHANT : getKey("ENCHANTMENT_TABLE");
     }
 
     @Nullable
